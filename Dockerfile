@@ -11,7 +11,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code into the container
-COPY wifi_api.py /app/
+COPY check.py /app/
 
 # Expose the port the app runs on
 EXPOSE 5000
