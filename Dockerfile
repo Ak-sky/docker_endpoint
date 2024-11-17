@@ -17,4 +17,4 @@ COPY check.py /app/
 EXPOSE 5000
 
 # Command to run the application
-CMD ["python", "wifi_api.py"]
+CMD ["python", "check.py"]
