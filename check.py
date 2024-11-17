@@ -12,6 +12,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger()
 
+# State variable to store the latest status
+latest_status = {"message": "Ready", "hits": 0}
+
 # Simulated WiFi action
 def trigger_wifi_action():
     # Replace with your actual WiFi handling logic
@@ -28,19 +31,21 @@ def health_check():
 # API endpoint for WiFi button
 @app.route('/trigger_wifi', methods=['GET', 'POST'])
 def trigger_wifi():
+    global latest_status
     if request.method == 'POST':
         # Log the trigger action
         action_response = trigger_wifi_action()
         
-        # Log the request details (optional)
-        logger.debug(f"Request received: {request.json}")
+        # Update the state variable
+        latest_status["message"] = action_response
+        latest_status["hits"] += 1
         
-        # Return a JSON response
+        logger.debug(f"Request received: {request.json}")
         return jsonify({"status": "success", "message": action_response}), 200
     elif request.method == 'GET':
-        # Render an HTML page for browser access
+        # Render an HTML page with the current status
         logger.info("Browser hit detected on /trigger_wifi.")
-        return render_template_string("""
+        return render_template_string(f"""
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -51,7 +56,8 @@ def trigger_wifi():
             <body>
                 <h1>Trigger WiFi Endpoint</h1>
                 <p>This endpoint toggles WiFi when accessed via POST.</p>
-                <p>Status: <strong>Ready</strong></p>
+                <p><strong>Latest Status:</strong> {latest_status['message']}</p>
+                <p><strong>Total Hits:</strong> {latest_status['hits']}</p>
             </body>
             </html>
         """)
